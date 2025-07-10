@@ -16,3 +16,5 @@ This is a FastAPI-based microservice for ETA prediction.
 
 ## API
 - `POST /predict-eta` — Predicts ETA in minutes given pickup/dropoff coordinates and hour of day. 
+  - Request body: `{ "pickup_lat": float, "pickup_lng": float, "dropoff_lat": float, "dropoff_lng": float, "hour_of_day": int }`
+  - Response: `{ "eta_minutes": float }` 

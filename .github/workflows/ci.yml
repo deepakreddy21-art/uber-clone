@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project: [backend/frontend, frontend, uber-web, uber-clone/ml-service]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Node.js
+        if: matrix.project != 'uber-clone/ml-service' && matrix.project != 'uber-clone/backend'
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Set up Python
+        if: matrix.project == 'uber-clone/ml-service'
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - name: Set up Java
+        if: matrix.project == 'uber-clone/backend'
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Install dependencies (Node)
+        if: matrix.project != 'uber-clone/ml-service' && matrix.project != 'uber-clone/backend'
+        run: |
+          cd ${{ matrix.project }}
+          npm install
+      - name: Install dependencies (Python)
+        if: matrix.project == 'uber-clone/ml-service'
+        run: |
+          cd ${{ matrix.project }}
+          pip install -r requirements.txt
+      - name: Install dependencies (Java)
+        if: matrix.project == 'uber-clone/backend'
+        run: |
+          cd ${{ matrix.project }}
+          mvn install -DskipTests
+      - name: Lint (Node)
+        if: matrix.project != 'uber-clone/ml-service' && matrix.project != 'uber-clone/backend'
+        run: |
+          cd ${{ matrix.project }}
+          npm run lint
+      - name: Test (Node)
+        if: matrix.project != 'uber-clone/ml-service' && matrix.project != 'uber-clone/backend'
+        run: |
+          cd ${{ matrix.project }}
+          npm test -- --watchAll=false
+      - name: Test (Python)
+        if: matrix.project == 'uber-clone/ml-service'
+        run: |
+          cd ${{ matrix.project }}
+          pytest
+      - name: Test (Java)
+        if: matrix.project == 'uber-clone/backend'
+        run: |
+          cd ${{ matrix.project }}
+          mvn test 

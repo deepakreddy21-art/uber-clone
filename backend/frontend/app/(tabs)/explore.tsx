@@ -1,3 +1,4 @@
+import React from 'react';
 import { Image } from 'expo-image';
 import { Platform, StyleSheet } from 'react-native';
 
@@ -8,7 +9,11 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 
-export default function TabTwoScreen() {
+/**
+ * Explore screen displays example code and documentation links for new users.
+ * Replace this with your actual feature UI as you build the app.
+ */
+const TabTwoScreen: React.FC = () => {
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
@@ -95,6 +100,8 @@ export default function TabTwoScreen() {
     </ParallaxScrollView>
   );
 }
+
+export default TabTwoScreen;
 
 const styles = StyleSheet.create({
   headerImage: {

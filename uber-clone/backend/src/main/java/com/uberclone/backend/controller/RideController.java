@@ -4,42 +4,44 @@ import com.uberclone.backend.model.Ride;
 import com.uberclone.backend.model.User;
 import com.uberclone.backend.repository.RideRepository;
 import com.uberclone.backend.repository.UserRepository;
-import com.uberclone.backend.websocket.RideStatusWebSocketController;
-import com.uberclone.backend.service.EtaPredictionService;
+import com.uberclone.backend.service.RideService;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import org.springframework.validation.annotation.Validated;
+
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/rides")
+@Validated
 public class RideController {
     @Autowired
     private RideRepository rideRepository;
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private RideStatusWebSocketController rideStatusWebSocketController;
-    @Autowired
-    private EtaPredictionService etaPredictionService;
+    private RideService rideService;
 
+    /**
+     * Request a new ride.
+     * @param request Ride request body
+     * @param authentication Authenticated user
+     * @return The created ride
+     */
     @PostMapping("/request")
-    public ResponseEntity<?> requestRide(@RequestBody RideRequest request, Authentication authentication) {
-        User user = userRepository.findByEmail(authentication.getName()).orElseThrow();
-        Ride ride = Ride.builder()
-                .user(user)
-                .pickupLocation(request.getPickupLocation())
-                .dropoffLocation(request.getDropoffLocation())
-                .requestedAt(LocalDateTime.now())
-                .status(Ride.Status.REQUESTED)
-                .build();
-        rideRepository.save(ride);
-        return ResponseEntity.ok(ride);
+    public ResponseEntity<?> requestRide(@Valid @RequestBody RideRequest request, Authentication authentication) {
+        try {
+            return ResponseEntity.ok(rideService.requestRide(request, authentication));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Failed to request ride: " + e.getMessage());
+        }
     }
 
     @GetMapping("/available")
@@ -47,19 +49,19 @@ public class RideController {
         return rideRepository.findByStatus(Ride.Status.REQUESTED);
     }
 
+    /**
+     * Accept a ride as a driver.
+     * @param rideId Ride ID
+     * @param authentication Authenticated driver
+     * @return The accepted ride
+     */
     @PostMapping("/accept/{rideId}")
     public ResponseEntity<?> acceptRide(@PathVariable Long rideId, Authentication authentication) {
-        User driver = userRepository.findByEmail(authentication.getName()).orElseThrow();
-        Optional<Ride> rideOpt = rideRepository.findById(rideId);
-        if (rideOpt.isEmpty() || rideOpt.get().getStatus() != Ride.Status.REQUESTED) {
-            return ResponseEntity.badRequest().body("Ride not available");
+        try {
+            return rideService.acceptRide(rideId, authentication);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Failed to accept ride: " + e.getMessage());
         }
-        Ride ride = rideOpt.get();
-        ride.setDriver(driver);
-        ride.setStatus(Ride.Status.ACCEPTED);
-        rideRepository.save(ride);
-        rideStatusWebSocketController.sendRideStatusUpdate(ride);
-        return ResponseEntity.ok(ride);
     }
 
     @GetMapping("/my")
@@ -72,31 +74,40 @@ public class RideController {
         }
     }
 
+    /**
+     * Predict ETA for a ride.
+     * @param request ETA request body
+     * @return ETA in minutes
+     */
     @PostMapping("/predict-eta")
-    public ResponseEntity<?> predictEta(@RequestBody EtaRequest request) {
-        double eta = etaPredictionService.predictEta(
-            request.getPickupLat(),
-            request.getPickupLng(),
-            request.getDropoffLat(),
-            request.getDropoffLng(),
-            request.getHourOfDay()
-        );
-        return ResponseEntity.ok(new EtaResponse(eta));
+    public ResponseEntity<?> predictEta(@Valid @RequestBody EtaRequest request) {
+        try {
+            return ResponseEntity.ok(rideService.predictEta(request));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Failed to predict ETA: " + e.getMessage());
+        }
     }
 
     @Data
     public static class RideRequest {
+        @NotBlank
         private String pickupLocation;
+        @NotBlank
         private String dropoffLocation;
     }
 
     @Data
     public static class EtaRequest {
-        private double pickupLat;
-        private double pickupLng;
-        private double dropoffLat;
-        private double dropoffLng;
-        private int hourOfDay;
+        @NotNull
+        private Double pickupLat;
+        @NotNull
+        private Double pickupLng;
+        @NotNull
+        private Double dropoffLat;
+        @NotNull
+        private Double dropoffLng;
+        @NotNull
+        private Integer hourOfDay;
     }
 
     @Data
