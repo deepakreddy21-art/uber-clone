@@ -1,6 +1,7 @@
 package com.uberclone.backend.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.uberclone.backend.service.RideService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -23,7 +24,7 @@ public class RideControllerTest {
     @Test
     @WithMockUser(username = "testuser@example.com")
     void requestRide_shouldReturnBadRequest_whenFieldsMissing() throws Exception {
-        String body = objectMapper.writeValueAsString(new RideController.RideRequest());
+        String body = objectMapper.writeValueAsString(new RideService.RideRequestRequest());
         mockMvc.perform(post("/api/rides/request")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body))

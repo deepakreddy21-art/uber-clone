@@ -49,6 +49,18 @@ public class AuthController {
         return ResponseEntity.ok(new JwtResponse(jwt));
     }
 
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
+        var userOpt = userRepository.findByEmail(request.getEmail());
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.badRequest().body("User not found");
+        }
+        User user = userOpt.get();
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+        return ResponseEntity.ok("Password reset successfully");
+    }
+
     @Data
     public static class RegisterRequest {
         private String email;
@@ -66,5 +78,11 @@ public class AuthController {
     @Data
     public static class JwtResponse {
         private final String token;
+    }
+
+    @Data
+    public static class ResetPasswordRequest {
+        private String email;
+        private String newPassword;
     }
 } 

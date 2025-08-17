@@ -1,0 +1,81 @@
+{
+  "name": "uber-clone-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@googlemaps/js-api-loader": "^1.16.2",
+    "@headlessui/react": "^1.7.15",
+    "@heroicons/react": "^2.0.18",
+    "@react-google-maps/api": "^2.18.1",
+    "@tanstack/react-query": "^4.29.0",
+    "@testing-library/jest-dom": "^5.16.4",
+    "@testing-library/react": "^13.3.0",
+    "@testing-library/user-event": "^14.4.3",
+    "@types/jest": "^27.5.2",
+    "@types/node": "^16.11.56",
+    "@types/react": "^18.0.17",
+    "@types/react-dom": "^18.0.6",
+    "autoprefixer": "^10.4.14",
+    "axios": "^1.4.0",
+    "clsx": "^1.2.1",
+    "date-fns": "^2.30.0",
+    "framer-motion": "^10.12.16",
+    "lucide-react": "^0.263.1",
+    "postcss": "^8.4.24",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.44.3",
+    "react-hot-toast": "^2.4.1",
+    "react-intersection-observer": "^9.5.2",
+    "react-router-dom": "^6.3.0",
+    "react-scripts": "5.0.1",
+    "react-spring": "^9.7.3",
+    "react-transition-group": "^4.4.5",
+    "react-use-gesture": "^9.1.3",
+    "socket.io-client": "^4.7.2",
+    "tailwindcss": "^3.3.2",
+    "web-vitals": "^2.1.4",
+    "zustand": "^4.3.8"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "dev": "react-scripts start",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "type-check": "tsc --noEmit"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@types/react-router-dom": "^5.3.3",
+    "@typescript-eslint/eslint-plugin": "^5.59.8",
+    "@typescript-eslint/parser": "^5.59.8",
+    "eslint": "^8.42.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.32.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "prettier": "^2.8.8",
+    "typescript": "^4.9.5"
+  },
+  "proxy": "http://localhost:8080"
+}
