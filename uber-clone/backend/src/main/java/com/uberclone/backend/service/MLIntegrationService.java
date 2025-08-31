@@ -56,8 +56,7 @@ public class MLIntegrationService {
             request.put("traffic_level", "NORMAL"); // Would come from traffic service
 
             String url = mlServiceUrl + "/predict/eta";
-            @SuppressWarnings("unchecked")
-            ResponseEntity<Map<String, Object>> response = (ResponseEntity<Map<String, Object>>) restTemplate.postForEntity(url, request, Map.class);
+            ResponseEntity<Map> response = restTemplate.postForEntity(url, request, Map.class);
 
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
                 Map<String, Object> body = response.getBody();
@@ -94,7 +93,7 @@ public class MLIntegrationService {
             request.put("date", date.toLocalDate().toString());
 
             String url = mlServiceUrl + "/forecast/demand";
-            ResponseEntity<Map<String, Object>> response = restTemplate.postForEntity(url, request, Map.class);
+            ResponseEntity<Map> response = restTemplate.postForEntity(url, request, Map.class);
 
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
                 Map<String, Object> body = response.getBody();
@@ -132,7 +131,7 @@ public class MLIntegrationService {
             request.put("day_type", getDayType(time));
 
             String url = mlServiceUrl + "/predict/surge";
-            ResponseEntity<Map<String, Object>> response = restTemplate.postForEntity(url, request, Map.class);
+            ResponseEntity<Map> response = restTemplate.postForEntity(url, request, Map.class);
 
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
                 Map<String, Object> body = response.getBody();
@@ -168,7 +167,7 @@ public class MLIntegrationService {
             request.put("special_requirements", List.of());
 
             String url = mlServiceUrl + "/match/drivers";
-            ResponseEntity<Map<String, Object>> response = restTemplate.postForEntity(url, request, new HashMap<String, Object>().getClass());
+            ResponseEntity<Map> response = restTemplate.postForEntity(url, request, Map.class);
 
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
                 Map<String, Object> body = response.getBody();
@@ -212,7 +211,7 @@ public class MLIntegrationService {
 
         try {
             String url = mlServiceUrl + "/health";
-            ResponseEntity<Map<String, Object>> response = restTemplate.getForEntity(url, new HashMap<String, Object>().getClass());
+            ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
             return response.getStatusCode().is2xxSuccessful();
         } catch (Exception e) {
             log.debug("ML service health check failed: {}", e.getMessage());
@@ -230,7 +229,7 @@ public class MLIntegrationService {
 
         try {
             String url = mlServiceUrl + "/health";
-            ResponseEntity<Map<String, Object>> response = restTemplate.getForEntity(url, new HashMap<String, Object>().getClass());
+            ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
             
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
                 Map<String, Object> capabilities = new HashMap<>();
