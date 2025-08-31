@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uber Clone - API Test Client</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .section {
+            margin-bottom: 30px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .section h2 {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .response {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 10px;
+            margin: 10px 0;
+            white-space: pre-wrap;
+            font-family: monospace;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            border-bottom: none;
+            background-color: #f8f9fa;
+        }
+        .tab.active {
+            background-color: white;
+            border-color: #ddd;
+            border-bottom: 1px solid white;
+            margin-bottom: -1px;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚗 Uber Clone - API Test Client</h1>
+        <div class="info">
+            <strong>Demo Accounts:</strong><br>
+            Rider: rider@demo.com / password<br>
+            Driver: driver@demo.com / password<br>
+            <strong>API Base URL:</strong> <span id="apiBaseUrl">http://localhost:8080</span>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('auth')">Authentication</div>
+            <div class="tab" onclick="showTab('rider')">Rider Flow</div>
+            <div class="tab" onclick="showTab('driver')">Driver Flow</div>
+            <div class="tab" onclick="showTab('websocket')">WebSocket Test</div>
+        </div>
+
+        <!-- Authentication Tab -->
+        <div id="auth" class="tab-content active">
+            <div class="section">
+                <h2>🔐 Authentication</h2>
+                
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" id="loginEmail" value="rider@demo.com">
+                </div>
+                
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="password" id="loginPassword" value="password">
+                </div>
+                
+                <button onclick="login()">Login</button>
+                <button onclick="logout()">Logout</button>
+                
+                <div id="authResponse"></div>
+            </div>
+        </div>
+
+        <!-- Rider Flow Tab -->
+        <div id="rider" class="tab-content">
+            <div class="section">
+                <h2>👤 Rider Flow</h2>
+                
+                <div class="form-group">
+                    <label>Pickup Location:</label>
+                    <input type="text" id="pickupLocation" value="Chicago, IL">
+                </div>
+                
+                <div class="form-group">
+                    <label>Dropoff Location:</label>
+                    <input type="text" id="dropoffLocation" value="Navy Pier, Chicago">
+                </div>
+                
+                <div class="form-group">
+                    <label>Pickup Latitude:</label>
+                    <input type="number" id="pickupLat" value="41.8781" step="0.0001">
+                </div>
+                
+                <div class="form-group">
+                    <label>Pickup Longitude:</label>
+                    <input type="number" id="pickupLng" value="-87.6298" step="0.0001">
+                </div>
+                
+                <div class="form-group">
+                    <label>Dropoff Latitude:</label>
+                    <input type="number" id="dropoffLat" value="41.8919" step="0.0001">
+                </div>
+                
+                <div class="form-group">
+                    <label>Dropoff Longitude:</label>
+                    <input type="number" id="dropoffLng" value="-87.6026" step="0.0001">
+                </div>
+                
+                <button onclick="requestRide()">Request Ride</button>
+                <button onclick="getRideStatus()">Get Ride Status</button>
+                <button onclick="cancelRide()">Cancel Ride</button>
+                
+                <div id="riderResponse"></div>
+            </div>
+        </div>
+
+        <!-- Driver Flow Tab -->
+        <div id="driver" class="tab-content">
+            <div class="section">
+                <h2>🚗 Driver Flow</h2>
+                
+                <div class="form-group">
+                    <label>Driver Email:</label>
+                    <input type="email" id="driverEmail" value="driver@demo.com">
+                </div>
+                
+                <div class="form-group">
+                    <label>Driver Password:</label>
+                    <input type="password" id="driverPassword" value="password">
+                </div>
+                
+                <button onclick="driverLogin()">Driver Login</button>
+                <button onclick="updateDriverLocation()">Update Location</button>
+                <button onclick="setDriverStatus()">Go Online</button>
+                <button onclick="getAvailableRides()">Get Available Rides</button>
+                
+                <div id="driverResponse"></div>
+            </div>
+        </div>
+
+        <!-- WebSocket Test Tab -->
+        <div id="websocket" class="tab-content">
+            <div class="section">
+                <h2>🔌 WebSocket Test</h2>
+                
+                <button onclick="connectWebSocket()">Connect WebSocket</button>
+                <button onclick="disconnectWebSocket()">Disconnect</button>
+                
+                <div class="form-group">
+                    <label>Ride ID:</label>
+                    <input type="text" id="wsRideId" placeholder="Enter ride ID to subscribe">
+                </div>
+                
+                <button onclick="subscribeToRide()">Subscribe to Ride Updates</button>
+                
+                <div id="websocketResponse"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let authToken = localStorage.getItem('authToken');
+        let currentRideId = null;
+        let websocket = null;
+
+        // Tab functionality
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // API helper functions
+        async function apiCall(endpoint, method = 'GET', body = null) {
+            const url = `${document.getElementById('apiBaseUrl').textContent}${endpoint}`;
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            
+            if (authToken) {
+                headers['Authorization'] = `Bearer ${authToken}`;
+            }
+            
+            try {
+                const response = await fetch(url, {
+                    method,
+                    headers,
+                    body: body ? JSON.stringify(body) : null
+                });
+                
+                const data = await response.json();
+                return { success: response.ok, data, status: response.status };
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
+        }
+
+        function showResponse(elementId, result) {
+            const element = document.getElementById(elementId);
+            if (result.success) {
+                element.innerHTML = `<div class="success">Success!</div><div class="response">${JSON.stringify(result.data, null, 2)}</div>`;
+            } else {
+                element.innerHTML = `<div class="error">Error: ${result.error || result.data?.message || 'Unknown error'}</div><div class="response">${JSON.stringify(result, null, 2)}</div>`;
+            }
+        }
+
+        // Authentication functions
+        async function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            const result = await apiCall('/api/auth/login', 'POST', {
+                email,
+                password
+            });
+            
+            if (result.success) {
+                authToken = result.data.token;
+                localStorage.setItem('authToken', authToken);
+            }
+            
+            showResponse('authResponse', result);
+        }
+
+        function logout() {
+            authToken = null;
+            localStorage.removeItem('authToken');
+            showResponse('authResponse', { success: true, data: { message: 'Logged out successfully' } });
+        }
+
+        // Rider functions
+        async function requestRide() {
+            const result = await apiCall('/api/rides/request', 'POST', {
+                pickupLocation: document.getElementById('pickupLocation').value,
+                dropoffLocation: document.getElementById('dropoffLocation').value,
+                pickupLatitude: parseFloat(document.getElementById('pickupLat').value),
+                pickupLongitude: parseFloat(document.getElementById('pickupLng').value),
+                dropoffLatitude: parseFloat(document.getElementById('dropoffLat').value),
+                dropoffLongitude: parseFloat(document.getElementById('dropoffLng').value),
+                vehicleType: 'STANDARD'
+            });
+            
+            if (result.success) {
+                currentRideId = result.data.id;
+            }
+            
+            showResponse('riderResponse', result);
+        }
+
+        async function getRideStatus() {
+            if (!currentRideId) {
+                showResponse('riderResponse', { success: false, error: 'No ride ID available' });
+                return;
+            }
+            
+            const result = await apiCall(`/api/rides/${currentRideId}/status`);
+            showResponse('riderResponse', result);
+        }
+
+        async function cancelRide() {
+            if (!currentRideId) {
+                showResponse('riderResponse', { success: false, error: 'No ride ID available' });
+                return;
+            }
+            
+            const result = await apiCall(`/api/rides/${currentRideId}/cancel`, 'POST');
+            showResponse('riderResponse', result);
+        }
+
+        // Driver functions
+        async function driverLogin() {
+            const email = document.getElementById('driverEmail').value;
+            const password = document.getElementById('driverPassword').value;
+            
+            const result = await apiCall('/api/auth/login', 'POST', {
+                email,
+                password
+            });
+            
+            if (result.success) {
+                authToken = result.data.token;
+                localStorage.setItem('authToken', authToken);
+            }
+            
+            showResponse('driverResponse', result);
+        }
+
+        async function updateDriverLocation() {
+            const result = await apiCall('/api/drivers/location', 'PUT', {
+                latitude: 41.8781,
+                longitude: -87.6298,
+                isOnline: true,
+                isAvailable: true
+            });
+            
+            showResponse('driverResponse', result);
+        }
+
+        async function setDriverStatus() {
+            const result = await apiCall('/api/drivers/status', 'PUT', {
+                isOnline: true,
+                isAvailable: true
+            });
+            
+            showResponse('driverResponse', result);
+        }
+
+        async function getAvailableRides() {
+            const result = await apiCall('/api/drivers/rides/available');
+            showResponse('driverResponse', result);
+        }
+
+        // WebSocket functions
+        function connectWebSocket() {
+            if (websocket) {
+                websocket.close();
+            }
+            
+            const wsUrl = document.getElementById('apiBaseUrl').textContent.replace('http', 'ws') + '/ws/rides';
+            websocket = new WebSocket(wsUrl);
+            
+            websocket.onopen = function(event) {
+                showResponse('websocketResponse', { success: true, data: { message: 'WebSocket connected' } });
+            };
+            
+            websocket.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                const element = document.getElementById('websocketResponse');
+                element.innerHTML += `<div class="info">Received: ${JSON.stringify(data, null, 2)}</div>`;
+            };
+            
+            websocket.onerror = function(error) {
+                showResponse('websocketResponse', { success: false, error: 'WebSocket error: ' + error });
+            };
+            
+            websocket.onclose = function(event) {
+                showResponse('websocketResponse', { success: true, data: { message: 'WebSocket disconnected' } });
+            };
+        }
+
+        function disconnectWebSocket() {
+            if (websocket) {
+                websocket.close();
+                websocket = null;
+            }
+        }
+
+        function subscribeToRide() {
+            if (!websocket) {
+                showResponse('websocketResponse', { success: false, error: 'WebSocket not connected' });
+                return;
+            }
+            
+            const rideId = document.getElementById('wsRideId').value;
+            if (!rideId) {
+                showResponse('websocketResponse', { success: false, error: 'Please enter a ride ID' });
+                return;
+            }
+            
+            const message = {
+                type: 'SUBSCRIBE_RIDE',
+                rideId: rideId
+            };
+            
+            websocket.send(JSON.stringify(message));
+            showResponse('websocketResponse', { success: true, data: { message: 'Subscribed to ride updates' } });
+        }
+
+        // Initialize
+        if (authToken) {
+            document.getElementById('authResponse').innerHTML = '<div class="success">Already logged in</div>';
+        }
+    </script>
+</body>
+</html>

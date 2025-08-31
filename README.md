@@ -144,9 +144,6 @@ Overall Progress: 30% Complete
 ### Prerequisites
 - Docker and Docker Compose
 - Java 17+ (for local development)
-- Node.js 18+ (for frontend development)
-- Go 1.21+ (for Go service development)
-- Python 3.11+ (for ML service development)
 
 ### 1. Clone the Repository
 ```bash
@@ -154,30 +151,47 @@ git clone https://github.com/yourusername/uber-clone.git
 cd uber-clone
 ```
 
-### 2. Start All Services with Docker
+### 2. Environment Setup
+Copy the environment example file and configure your settings:
+```bash
+cp backend/env.example backend/.env
+# Edit backend/.env with your actual values
+```
+
+### 3. Start Services with Docker
 ```bash
 docker-compose up -d
 ```
 
 This will start:
-- PostgreSQL database
-- Redis cache
-- Kafka message broker
-- Spring Boot backend
-- Go microservice
-- Python ML service
-- React frontend
-- Nginx proxy
-- Monitoring stack
+- PostgreSQL database (port 5432)
+- Redis cache (port 6379)
+- Spring Boot backend (port 8080)
 
-### 3. Access the Application
-- **Frontend**: http://localhost:3000
+### 4. Access the Application
 - **Backend API**: http://localhost:8080
-- **ML Service**: http://localhost:8000
-- **Go Service**: http://localhost:8081
-- **Kafka UI**: http://localhost:8082
-- **Grafana**: http://localhost:3001
-- **Kibana**: http://localhost:5601
+- **Swagger UI**: http://localhost:8080/swagger-ui
+- **Health Check**: http://localhost:8080/actuator/health
+- **Test Client**: Open `test-client.html` in your browser
+
+### 5. Demo Accounts
+- **Rider**: rider@demo.com / password
+- **Driver**: driver@demo.com / password
+
+### 6. Test the Flow
+1. Open `test-client.html` in your browser
+2. Login as rider (rider@demo.com / password)
+3. Request a ride with pickup/dropoff locations
+4. Login as driver (driver@demo.com / password) in another tab
+5. Go online and accept the ride
+6. Complete the ride flow
+
+### 7. Stripe Test Cards
+Use these test card numbers for payments:
+- **Success**: 4242 4242 4242 4242
+- **Decline**: 4000 0000 0000 0002
+- **Expiry**: Any future date
+- **CVC**: Any 3 digits
 
 ## 📖 Detailed Setup
 
